@@ -60,8 +60,14 @@ async function writeInTextArea(selector, string) {
     await type(string);
 }
 
-async function inputStringInSelector(selector, string) {
-    await page.$eval(selector, el => el.value = string);
+async function inputStringInSelector(selector, newValue) {
+    await page.waitForSelector(selector);
+    const element = await page.$(selector);
+    if (element) {
+        await page.$eval(selector, (el, value) => el.value = value, newValue);
+    } else {
+        console.error(`No element found with the selector ${selector}`);
+    }
 }
 
 async function evalSelect(selector) {
@@ -94,6 +100,10 @@ async function getInnerHtml(selector) {
     return inner_html;
 }
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function queryAi(message, context) {
     let queryString = message + "\n WITH THE BELOW CONTEXT: \n" + context;
     const inputSelector = "TextArea";
@@ -102,7 +112,9 @@ async function queryAi(message, context) {
     await inputStringInSelector(inputSelector, queryString);
     await writeInTextArea(inputSelector, "\n");
 
-    setTimeout(() => {getInnerHtmlOfLastElem(answerSelector)}, 5000);
+    await timeout(5000);
+    const innerHTML = await getInnerHtmlOfLastElem(answerSelector);
+    return innerHTML;
 }
 
 
