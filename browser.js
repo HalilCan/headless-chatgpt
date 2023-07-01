@@ -105,7 +105,7 @@ function timeout(ms) {
 }
 
 async function queryAi(message, context) {
-    let queryString;
+    let queryString, innerHTML;
     if (context === "") {
         queryString = message + "\n";
     } else {
@@ -128,7 +128,14 @@ async function queryAi(message, context) {
         await timeout(500);
         button = await page.$x("//button[contains(., 'Regenerate response')]");
         if (button.length > 0) {
-            break;
+            let continueButton = await page.$x("//button[contains(., 'Continue generating')]");
+            if (continueButton.length > 0) {
+                // we don't need to do this, because the elements are merged on chatgpt's as we continue.
+                // innerHTML += await getInnerHtmlOfLastElem(answerSelector);
+                continueButton[0].click();
+            } else {
+                break;
+            }
             // await button.click();
         }
         // let newReturnMd = await getInnerHtmlOfLastElem(answerSelector);
@@ -145,7 +152,7 @@ async function queryAi(message, context) {
     }
 
     // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
-    const innerHTML = await getInnerHtmlOfLastElem(answerSelector);
+    innerHTML += await getInnerHtmlOfLastElem(answerSelector);
     return innerHTML;
 }
 
