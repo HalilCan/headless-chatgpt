@@ -62,7 +62,6 @@ async function writeInTextArea(selector, string) {
 
 async function evalSelect(selector) {
     const result = await page.$$eval(selector, elems => {
-        console.log(elems);
         return elems;
     });
     return result;
@@ -83,8 +82,6 @@ async function getInnerHtmlOfLastElem(selector) {
         const lastElem = elems.length > 1 ? elems[elems.length - 1] : elems[0];
         return lastElem.innerHTML;
     });
-
-    console.log(result);
     return result;
 }
 

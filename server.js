@@ -101,9 +101,7 @@ app.post('/getInnerHtmlOfLast', async (req, res) => {
             res.send('Please provide a valid selector.');
             return;
         }
-        console.log(req.body);
         const innerHtml = await browserModule.getInnerHtmlOfLastElem(req.body.selector);
-        console.log(innerHtml);
         res.send({"innerHtml": innerHtml});
     } catch (error) {
         console.error(error);
