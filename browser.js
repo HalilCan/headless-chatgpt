@@ -1,5 +1,7 @@
-const puppeteer = require('puppeteer');
-const iPad = puppeteer.KnownDevices['iPad Pro 11 landscape'];
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+
+puppeteer.use(StealthPlugin());
 
 let browser;
 let page;
@@ -14,7 +16,7 @@ async function startBrowser(){
         height: 768,
         deviceScaleFactor: 1,
     });
-    await page.emulate(iPad);
+    // await page.emulate(iPad);
     // await page.emulateTimezone("Europe/Istanbul");
     await page.emulateTimezone("America/New_York");
 }
@@ -49,18 +51,22 @@ async function writeInTextArea(selector, string) {
 
 async function evalSelect(selector) {
     const selection = await page.$eval(selector);
+    console.log(selection);
     return selection;
 }
 
 async function evalSelectLastElem(selector) {
-    const selection = evalSelect(selector);
+    const selection = await evalSelect(selector);
     if (selection.length > 1) {
         return selection[selection.length - 1];
+    } else {
+        return selection;
     }
 }
 
 async function getInnerHtmlOfLastElem(selector) {
-    const lastElem = evalSelectLastElem(selector);
+    const lastElem = await evalSelectLastElem(selector);
+    console.log(lastElem);
     return lastElem.innerHTML;
 }
 

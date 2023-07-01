@@ -53,7 +53,7 @@ app.post('/typeInElem', async (req, res) => {
 
 app.post('/getInnerHtml', async (req, res) => {
     if (!req.body.selector) {
-        res.send('Please provide a valid selector and string.');
+        res.send('Please provide a valid selector.');
         return;
     }
     const innerHtml = await browserModule.getInnerHtml(req.body.selector);
@@ -62,10 +62,12 @@ app.post('/getInnerHtml', async (req, res) => {
 
 app.post('/getInnerHtmlOfLast', async (req, res) => {
     if (!req.body.selector) {
-        res.send('Please provide a valid selector and string.');
+        res.send('Please provide a valid selector.');
         return;
     }
+    console.log(req, res);
     const innerHtml = await browserModule.getInnerHtmlOfLastElem(req.body.selector);
+    console.log(innerHtml);
     res.send({"innerHtml": innerHtml});
 })
 
