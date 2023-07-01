@@ -22,4 +22,13 @@ app.get('/close', async (req, res) => {
     res.send('Browser closed');
 });
 
+app.post('/type', async (req, res) => {
+    if (!req.body.string) {
+        res.send('Please provide a valid string to type.');
+        return;
+    }
+    await browserModule.type(req.body.string);
+    res.send(`Typed ${string}`);
+})
+
 app.listen(3000, () => console.log('Server started'));
