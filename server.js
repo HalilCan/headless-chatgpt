@@ -60,4 +60,13 @@ app.post('/getInnerHtml', async (req, res) => {
     res.send({"innerHtml": innerHtml});
 })
 
+app.post('/getInnerHtmlOfLast', async (req, res) => {
+    if (!req.body.selector) {
+        res.send('Please provide a valid selector and string.');
+        return;
+    }
+    const innerHtml = await browserModule.getInnerHtmlOfLastElem(req.body.selector);
+    res.send({"innerHtml": innerHtml});
+})
+
 app.listen(3000, () => console.log('Server started'));

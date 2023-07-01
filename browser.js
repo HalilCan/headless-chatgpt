@@ -68,4 +68,4 @@ async function getInnerHtml(selector) {
     const inner_html = await page.$eval(selector, element => element.innerHTML);
 }
 
-module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, selectElemWithIndex, writeInTextArea };
+module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem };
