@@ -60,6 +60,10 @@ async function writeInTextArea(selector, string) {
     await type(string);
 }
 
+async function inputStringInSelector(selector, string) {
+    await page.$eval(selector, el => el.value = string);
+}
+
 async function evalSelect(selector) {
     const result = await page.$$eval(selector, elems => {
         return elems;
@@ -90,5 +94,18 @@ async function getInnerHtml(selector) {
     return inner_html;
 }
 
+async function queryAi(message, context) {
+    let queryString = message + "\n WITH THE BELOW CONTEXT: \n" + context;
+    const inputSelector = "TextArea";
+    const answerSelector = "div .markdown";
 
-module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem };
+    await inputStringInSelector(inputSelector, queryString);
+    await writeInTextArea(inputSelector, "\n");
+
+    setTimeout(() => {getInnerHtmlOfLastElem(answerSelector)}, 5000);
+}
+
+
+module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
+    selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
+    queryAi };

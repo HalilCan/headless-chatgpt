@@ -109,4 +109,19 @@ app.post('/getInnerHtmlOfLast', async (req, res) => {
     }
 })
 
+app.post('/queryAi', async (req, res) => {
+    try {
+        if (!req.body.text) {
+            res.send('Please provide valid text.');
+            return;
+        }
+        let context = req.body.context ?? "";
+        const innerHtml = await browserModule.queryAi(req.body.text, context);
+        res.send({"text": innerHtml});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error in querying AI');
+    }
+})
+
 app.listen(3000, () => console.log('Server started'));
