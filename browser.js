@@ -105,14 +105,46 @@ function timeout(ms) {
 }
 
 async function queryAi(message, context) {
-    let queryString = message + "\n WITH THE BELOW CONTEXT: \n" + context;
+    let queryString;
+    if (context === "") {
+        queryString = message + "\n";
+    } else {
+        queryString = message + "\n WITH THE BELOW CONTEXT: \n" + context + "\n";
+    }
     const inputSelector = "TextArea";
     const answerSelector = "div .markdown";
 
     await inputStringInSelector(inputSelector, queryString);
+    // include the \n in the string because this doesn't work for some reason.
+    // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
+    await writeInTextArea(inputSelector, "\n");
+    await timeout(500);
 
-    await timeout(5000);
+    let button;
+    let waitCount = 0;
+    // make this a global const too
+    while (waitCount < 50) {
+        await timeout(500);
+        button = await page.$x("//button[contains(., 'Regenerate response')]");
+        if (button.length > 0) {
+            break;
+            // await button.click();
+        }
+        // let newReturnMd = await getInnerHtmlOfLastElem(answerSelector);
+        // if (oldReturnMd.children && oldReturnMd.children.length === newReturnMd.children.length) {
+        //     if (oldReturnMd.children[oldReturnMd.children.length - 1].innerText === newReturnMd.children[newReturnMd.children.length - 1].innerText) {
+        //         if (oldReturnMd.children[0].innerText.length > 2) {
+        //             oldReturnMd = newReturnMd;
+        //             break;
+        //         }
+        //     }
+        // }
+        // oldReturnMd = newReturnMd;
+        waitCount++;
+    }
+
+    // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
     const innerHTML = await getInnerHtmlOfLastElem(answerSelector);
     return innerHTML;
 }
