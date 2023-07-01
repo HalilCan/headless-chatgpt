@@ -40,8 +40,19 @@ async function selectElem(selector) {
     return element;
 }
 
-async function selectElemWithIndex(selector, index) {
-    return page.$$(selector);
+// 0 indexed
+async function selectElemWithIndex(selector, index) {    
+    return page.$$eval(selector, elems => {
+        if (elems.length >= index) {
+            return elems[index];
+        } else {
+            if (elems.length <= 1) {
+                return elems;
+            } else {
+                return elems[elems.length - 1];
+            }
+        }
+    });
 }
 
 async function writeInTextArea(selector, string) {
@@ -50,28 +61,37 @@ async function writeInTextArea(selector, string) {
 }
 
 async function evalSelect(selector) {
-    const selection = await page.$eval(selector);
-    console.log(selection);
-    return selection;
+    const result = await page.$$eval(selector, elems => {
+        console.log(elems);
+        return elems;
+    });
+    return result;
 }
 
 async function evalSelectLastElem(selector) {
-    const selection = await evalSelect(selector);
-    if (selection.length > 1) {
-        return selection[selection.length - 1];
-    } else {
-        return selection;
-    }
+    const result = await page.$$eval(selector, elems => {
+        const lastElem = elems.length > 1 ? elems[elems.length - 1] : elems[0];
+        console.log(lastElem);
+        return lastElem;
+    });
+    return result;
 }
 
+
 async function getInnerHtmlOfLastElem(selector) {
-    const lastElem = await evalSelectLastElem(selector);
-    console.log(lastElem);
-    return lastElem.innerHTML;
+    const result = await page.$$eval(selector, elems => {
+        const lastElem = elems.length > 1 ? elems[elems.length - 1] : elems[0];
+        return lastElem.innerHTML;
+    });
+
+    console.log(result);
+    return result;
 }
 
 async function getInnerHtml(selector) {
     const inner_html = await page.$eval(selector, element => element.innerHTML);
+    return inner_html;
 }
+
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem };
