@@ -31,4 +31,41 @@ async function closeBrowser(){
     await browser.close();
 }
 
-module.exports = { startBrowser, visitPage, closeBrowser, type };
+async function selectElem(selector) {
+    const element = await page.waitForSelector(selector);
+    //
+    await element.click();
+    return element;
+}
+
+async function selectElemWithIndex(selector, index) {
+    return page.$$(selector);
+}
+
+async function writeInTextArea(selector, string) {
+    const element = await page.focus(selector);
+    await type(string);
+}
+
+async function evalSelect(selector) {
+    const selection = await page.$eval(selector);
+    return selection;
+}
+
+async function evalSelectLastElem(selector) {
+    const selection = evalSelect(selector);
+    if (selection.length > 1) {
+        return selection[selection.length - 1];
+    }
+}
+
+async function getInnerHtmlOfLastElem(selector) {
+    const lastElem = evalSelectLastElem(selector);
+    return lastElem.innerHTML;
+}
+
+async function getInnerHtml(selector) {
+    const inner_html = await page.$eval(selector, element => element.innerHTML);
+}
+
+module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, selectElemWithIndex, writeInTextArea };

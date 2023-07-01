@@ -1,7 +1,9 @@
 const express = require('express');
 const browserModule = require('./browser');
+const bodyParser = require('body-parser');
 
 const app = express();
+app.use(bodyParser.json());
 
 app.get('/start', async (req, res) => {
     await browserModule.startBrowser();
@@ -29,6 +31,33 @@ app.post('/type', async (req, res) => {
     }
     await browserModule.type(req.body.string);
     res.send(`Typed ${string}`);
+})
+
+app.post('/select', async (req, res) => {
+    if (!req.body.selector) {
+        res.send('Please provide a valid selector.');
+        return;
+    }
+    const selected = await browserModule.selectElem(req.body.selector);
+    res.send({"selected": selected});
+})
+
+app.post('/typeInElem', async (req, res) => {
+    if (!req.body.selector || !req.body.string) {
+        res.send('Please provide a valid selector and string.');
+        return;
+    }
+    const selected = await browserModule.writeInTextArea(req.body.selector, req.body.string);
+    res.send({"selected": selected});
+})
+
+app.post('/getInnerHtml', async (req, res) => {
+    if (!req.body.selector) {
+        res.send('Please provide a valid selector and string.');
+        return;
+    }
+    const innerHtml = await browserModule.getInnerHtml(req.body.selector);
+    res.send({"innerHtml": innerHtml});
 })
 
 app.listen(3000, () => console.log('Server started'));
