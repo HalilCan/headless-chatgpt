@@ -128,9 +128,18 @@ async function readLastResponse() {
 }
 
 async function waitForGenerationToComplete() {
-    await timeout(_generationInitialWaitLength);
     let button;
     let waitCount = 0;
+    // sometimes our query doesn't "take" quickly, and the regenerate button from the last time around stays. This waits until that is done.
+    button = await page.$x(_regenButtonXPathSelector);
+    if (button && button.length > 0) {
+        while (button && button.length > 0) {
+            await timeout(_generationInitialWaitLength);
+            await page.$x(_regenButtonXPathSelector); 
+        }
+    }
+
+    // this just waits until the next regenerate button (which appears at the end of AI output) appears. If continue does so too, we press that and wait until done.
     while (waitCount < _maxWaitCount) {
         await timeout(_generationWaitStepLength);
         button = await page.$x(_regenButtonXPathSelector);
@@ -175,26 +184,8 @@ async function queryAi(message, context) {
     // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
     await writeInTextArea(inputSelector, "\n");
-    await timeout(_generationInitialWaitLength);
-
-    let button;
-    let waitCount = 0;
-    while (waitCount < _maxWaitCount) {
-        await timeout(_generationWaitStepLength);
-        button = await page.$x(_regenButtonXPathSelector);
-        if (button.length > 0) {
-            let continueButton = await page.$x(_continueButtonXPathSelector);
-            if (continueButton.length > 0) {
-                // we don't need to do this, because the elements are merged on chatgpt's as we continue.
-                // innerHTML += await getInnerHtmlOfLastElem(answerSelector);
-                continueButton[0].click();
-            } else {
-                break;
-            }
-            // await button.click();
-        }
-        waitCount++;
-    }
+    
+    await waitForGenerationToComplete();
 
     // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
     innerHTML += await getInnerHtmlOfLastElem(answerSelector);
