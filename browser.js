@@ -138,6 +138,7 @@ async function waitForGenerationToComplete() {
             await page.$x(_regenButtonXPathSelector); 
         }
     }
+    await timeout(_generationWaitStepLength / 2);
 
     // this just waits until the next regenerate button (which appears at the end of AI output) appears. If continue does so too, we press that and wait until done.
     while (waitCount < _maxWaitCount) {
