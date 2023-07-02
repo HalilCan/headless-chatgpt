@@ -80,11 +80,12 @@ async function evalSelect(selector) {
 async function evalSelectLastElem(selector) {
     const result = await page.$$eval(selector, elems => {
         const lastElem = elems.length > 1 ? elems[elems.length - 1] : elems[0];
-        console.log(lastElem);
         return lastElem;
     });
     return result;
 }
+
+// TODO: for the captcha, look for a button with inner text "Start Puzzle"
 
 
 async function getInnerHtmlOfLastElem(selector) {

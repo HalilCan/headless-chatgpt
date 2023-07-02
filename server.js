@@ -5,6 +5,17 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
+app.get('/chatgpt', async (req, res) => {
+    try {
+        await browserModule.startBrowser();
+        await browserModule.visitPage("https://chat.openai.com");
+        res.send('Navigated to chatgpt');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error navigating to chatgpt');
+    }
+});
+
 app.get('/start', async (req, res) => {
     try {
         await browserModule.startBrowser();
