@@ -8,7 +8,7 @@ let page;
 
 const _regenButtonXPathSelector = "//button[contains(., 'Regenerate response')]";
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating')]";
-const _maxWaitCount = 50;
+const _maxWaitCount = 100;
 const _generationWaitStepLength = 500;
 const _generationInitialWaitLength = 500;
 
@@ -145,9 +145,11 @@ async function waitForGenerationToComplete() {
         await timeout(_generationWaitStepLength);
         button = await page.$x(_regenButtonXPathSelector);
         if (button.length > 0) {
+            await timeout(_generationWaitStepLength);
             let continueButton = await page.$x(_continueButtonXPathSelector);
             if (continueButton.length > 0) {
                 // TODO: Should this reset waitCount? Adverse behavior?
+                waitCount = 0;
                 continueButton[0].click();
             } else {
                 break;
