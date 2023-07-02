@@ -135,4 +135,18 @@ app.post('/queryAi', async (req, res) => {
     }
 })
 
+app.get('/retry', async (req, res) => {
+    try {
+        const innerHtml = await browserModule.retry();
+        if (innerHtml === -1) {
+            console.error(error);
+            res.status(500).send('Error in retrying the last query on AI.');            
+        }
+        res.send({"text": innerHtml});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error in retrying the last query on AI.');
+    }
+})
+
 app.listen(3000, () => console.log('Server started'));

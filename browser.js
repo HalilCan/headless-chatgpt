@@ -6,6 +6,12 @@ puppeteer.use(StealthPlugin());
 let browser;
 let page;
 
+const _regenButtonXPathSelector = "//button[contains(., 'Regenerate response')]";
+const _continueButtonXPathSelector = "//button[contains(., 'Continue generating')]";
+const _maxWaitCount = 50;
+const _generationWaitStepLength = 500;
+const _generationInitialWaitLength = 500;
+
 async function startBrowser(){
     browser = await puppeteer.launch({
         headless: false
@@ -105,6 +111,55 @@ function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function clickButton(selector) {
+    let buttons = await page.$x(selector);
+    if (buttons.length > 0) {
+        buttons[0].click();
+        return 0;
+    } else {
+        return -1;
+    }
+}
+
+async function readLastResponse() {
+    const answerSelector = "div .markdown";
+    let innerHTML = await getInnerHtmlOfLastElem(answerSelector);
+    return innerHTML;
+}
+
+async function waitForGenerationToComplete() {
+    await timeout(_generationInitialWaitLength);
+    let button;
+    let waitCount = 0;
+    while (waitCount < _maxWaitCount) {
+        await timeout(_generationWaitStepLength);
+        button = await page.$x(_regenButtonXPathSelector);
+        if (button.length > 0) {
+            let continueButton = await page.$x(_continueButtonXPathSelector);
+            if (continueButton.length > 0) {
+                // TODO: Should this reset waitCount? Adverse behavior?
+                continueButton[0].click();
+            } else {
+                break;
+            }
+        }
+        waitCount++;
+    }
+}
+
+async function retry() {
+    let innerHTML;
+    const buttonXPathSelector = _regenButtonXPathSelector;
+    const clickResponse = await clickButton(buttonXPathSelector);
+    if (clickResponse === -1) {
+        return clickResponse;
+    }
+    // TODO: I think in case of errors that need regeneration, they disable the input box. Wait and see.
+    await waitForGenerationToComplete();
+    innerHTML = await readLastResponse();
+    return innerHTML;
+}
+
 async function queryAi(message, context) {
     let queryString, innerHTML;
     if (context === "") {
@@ -120,16 +175,15 @@ async function queryAi(message, context) {
     // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
     await writeInTextArea(inputSelector, "\n");
-    await timeout(500);
+    await timeout(_generationInitialWaitLength);
 
     let button;
     let waitCount = 0;
-    // make this a global const too
-    while (waitCount < 50) {
-        await timeout(500);
-        button = await page.$x("//button[contains(., 'Regenerate response')]");
+    while (waitCount < _maxWaitCount) {
+        await timeout(_generationWaitStepLength);
+        button = await page.$x(_regenButtonXPathSelector);
         if (button.length > 0) {
-            let continueButton = await page.$x("//button[contains(., 'Continue generating')]");
+            let continueButton = await page.$x(_continueButtonXPathSelector);
             if (continueButton.length > 0) {
                 // we don't need to do this, because the elements are merged on chatgpt's as we continue.
                 // innerHTML += await getInnerHtmlOfLastElem(answerSelector);
@@ -139,16 +193,6 @@ async function queryAi(message, context) {
             }
             // await button.click();
         }
-        // let newReturnMd = await getInnerHtmlOfLastElem(answerSelector);
-        // if (oldReturnMd.children && oldReturnMd.children.length === newReturnMd.children.length) {
-        //     if (oldReturnMd.children[oldReturnMd.children.length - 1].innerText === newReturnMd.children[newReturnMd.children.length - 1].innerText) {
-        //         if (oldReturnMd.children[0].innerText.length > 2) {
-        //             oldReturnMd = newReturnMd;
-        //             break;
-        //         }
-        //     }
-        // }
-        // oldReturnMd = newReturnMd;
         waitCount++;
     }
 
@@ -160,4 +204,4 @@ async function queryAi(message, context) {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi };
+    queryAi, retry };
