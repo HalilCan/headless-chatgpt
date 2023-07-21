@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const browserModule = require('./browser');
 const bodyParser = require('body-parser');
 
@@ -154,4 +155,11 @@ app.get('/retry', async (req, res) => {
 const defaultPort = 3000;
 const port = process.argv[2] || defaultPort;
 
-app.listen(3000, () => console.log(`ChatGPT API server running on port ${port}`));
+app.listen(port, async () => {
+    console.log(`ChatGPT API server running on port ${port}`);
+  
+    const response = await axios.get(`http://localhost:${port}/chatgpt`);
+    
+    // Do something with response...
+    console.log(response.data);
+  });
