@@ -149,4 +149,9 @@ app.get('/retry', async (req, res) => {
     }
 })
 
-app.listen(3000, () => console.log('Server started'));
+
+// determine the port.
+const defaultPort = 3000;
+const port = process.argv[2] || defaultPort;
+
+app.listen(3000, () => console.log(`ChatGPT API server running on port ${port}`));
