@@ -58,7 +58,7 @@ app.post('/type', async (req, res) => {
             return;
         }
         await browserModule.type(req.body.string);
-        res.send(`Typed ${string}`);
+        res.send(`Typed ${req.body.string}`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Error typing in browser');
