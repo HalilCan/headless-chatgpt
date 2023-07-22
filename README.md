@@ -1,12 +1,14 @@
 # Headless ChatGPT
 
+![Headless ChatGPT banner](/media/chatgpt-banner.webp)
+
 ## What is this
 
 [Headless ChatGPT](https://www.npmjs.com/package/headless-chatgpt/) is a browser-based API emulator for ChatGPT. It is a local server that controls a `puppeteer` Chrome instance, which allows using this server like a ChatGPT API.
 
 You do not need an API key. You just need a ChatGPT account.
 
-In essence: I did not have API access because of a strange billing error, so I made my own. Maybe it will be useful for someone else too.
+In essence: I did not have API access because of a strange and persistent error, so I made my own API. Maybe it will be useful for someone else too.
 
 ## Usage
 
