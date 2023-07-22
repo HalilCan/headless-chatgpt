@@ -2,13 +2,13 @@
   "name": "headless-chatgpt",
   "version": "1.0.0",
   "description": "headless-chatgpt is a puppeteer based local API for ChatGPT.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["chatgpt", "api", "education", "programming", "assistant"],
   "author": "HalilCan",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
