@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "description": "headless-chatgpt is a puppeteer based local API for ChatGPT.",
   "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HalilCan/headless-chatgpt"
+  },
+  "bugs": {
+    "url": "https://github.com/HalilCan/headless-chatgpt/issues"
+  },
+  "homepage": "https://github.com/HalilCan/headless-chatgpt#README",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
