@@ -157,9 +157,6 @@ const port = process.argv[2] || defaultPort;
 
 app.listen(port, async () => {
     console.log(`ChatGPT API server running on port ${port}`);
-  
     const response = await axios.get(`http://localhost:${port}/chatgpt`);
-    
-    // Do something with response...
-    console.log(response.data);
-  });
+    // console.log(response.data);
+});

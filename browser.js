@@ -128,15 +128,15 @@ async function readLastResponse() {
 }
 
 async function waitForGenerationToComplete() {
-    console.log("enter generation waiter");
+    // console.log("enter generation waiter");
     let button;
     let waitCount = 0;
     // sometimes our query doesn't "take" quickly, and the regenerate button from the last time around stays. This waits until that is done.
     button = await page.$x(_regenButtonXPathSelector);
     if (button && button.length > 0) {
-        console.log("first generation wait loop");
+        // console.log("first generation wait loop");
         while (button && button.length > 0) {
-            console.log("first generation inner loop, button:", button);
+            // console.log("first generation inner loop, button:", button);
             await timeout(_generationInitialWaitLength);
             button = await page.$x(_regenButtonXPathSelector); 
         }
@@ -145,7 +145,7 @@ async function waitForGenerationToComplete() {
 
     // this just waits until the next regenerate button (which appears at the end of AI output) appears. If continue does so too, we press that and wait until done.
     while (waitCount < _maxWaitCount) {
-        console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
+        // console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
         await timeout(_generationWaitStepLength);
         button = await page.$x(_regenButtonXPathSelector);
         if (button.length > 0) {
@@ -191,15 +191,15 @@ async function queryAi(message, context) {
     // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
     await writeInTextArea(inputSelector, "\n");
-    console.log("the long wait beginn");
+    // console.log("the long wait beginn");
     
     await waitForGenerationToComplete();
     
-    console.log("the long wait ENDS");
+    // console.log("the long wait ENDS");
 
     // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
     innerHTML += await getInnerHtmlOfLastElem(answerSelector);
-    console.log(innerHTML);
+    // console.log(innerHTML);
     return innerHTML;
 }
 
