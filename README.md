@@ -2,7 +2,7 @@
 
 ## What is this
 
-Headless ChatGPT is a browser-based API emulator for ChatGPT. It is a local server that controls a `puppeteer` Chrome instance, which allows using this server like a ChatGPT API.
+[Headless ChatGPT](https://www.npmjs.com/package/headless-chatgpt/) is a browser-based API emulator for ChatGPT. It is a local server that controls a `puppeteer` Chrome instance, which allows using this server like a ChatGPT API.
 
 You do not need an API key. You just need a ChatGPT account.
 
