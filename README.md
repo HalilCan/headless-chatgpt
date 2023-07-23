@@ -10,6 +10,11 @@ You do not need an API key. You just need a ChatGPT account.
 
 In essence: I did not have API access because of a strange and persistent error, so I made my own API. Maybe it will be useful for someone else too.
 
+## Software that use Headless ChatGPT:
+- [CodeGPT Assistant](https://github.com/HalilCan/codeGPT-assistant-extension)
+- [PR Assistant](https://www.youtube.com/watch?v=AgzSUK_9FoE)
+
+
 ## Usage
 
 1. Start the server with `node <path-to-server.js> <preferred-port>`. This will start the puppet browser and the controller server will begin listening at the `<preferred-port>`.
