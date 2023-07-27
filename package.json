@@ -1,6 +1,6 @@
 {
   "name": "headless-chatgpt",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "headless-chatgpt is a puppeteer based local API for ChatGPT.",
   "main": "server.js",
   "repository": {
