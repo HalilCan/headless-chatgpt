@@ -6,8 +6,8 @@ puppeteer.use(StealthPlugin());
 let browser;
 let page;
 
-const _regenButtonXPathSelector = "//button[contains(., 'Regenerate response')]";
-const _continueButtonXPathSelector = "//button[contains(., 'Continue generating')]";
+const _regenButtonXPathSelector = "//button[contains(., 'Regenerate') or contains(., 'Regenerate response')]";
+const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
 const _maxWaitCount = 100;
 const _generationWaitStepLength = 500;
 const _generationInitialWaitLength = 500;
