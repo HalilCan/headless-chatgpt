@@ -142,7 +142,11 @@ async function readLastResponse() {
 }
 
 async function waitForNewChat() {
-    await page.$x(_gptThreeButtonXPathSelector);
+    let button = await page.$x(_gptThreeButtonXPathSelector);
+    while (!button || button.length == 0) {
+        await timeout(_generationInitialWaitLength);
+        button = await page.$x(_gptThreeButtonXPathSelector);
+    }
 }
 
 async function waitForGenerationToComplete() {
@@ -182,9 +186,9 @@ async function waitForGenerationToComplete() {
 }
 
 async function newChat(modelNum) {
-    let innerHTML;
     const clickResponse = await clickButton(_newChatButtonXPathSelector);
     if (clickResponse === -1) {
+        console.error("Error: cannot click new chat");
         return clickResponse;
     }
     // TODO: I think in case of errors that need regeneration, they disable the input box. Wait and see.

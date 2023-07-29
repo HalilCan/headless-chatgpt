@@ -157,21 +157,21 @@ app.post('/newChat', async (req, res) => {
     try {
         let model;
         if (!req.body.model) {
-            // res.send('Please provide the model for the .');
-            // return;
             model = 3;
         } else {
             model = req.body.model;
         }
         const actionResponse = await browserModule.newChat(model);
+        console.log('actionResponse', actionResponse);
         if (actionResponse === -1) {
-            console.error(error);
+            console.error('Error in starting new chat.');
             res.status(500).send('Error in starting new chat.');            
+        } else {
+            res.send('New chat started');
         }
-        res.send('New chat started');
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error in retrying the last query on AI.');
+        res.status(500).send('Error in starting new chat.');
     }
 })
 
