@@ -90,6 +90,12 @@ This endpoint queries the AI with the provided text and optional context.
 * Request: JSON body with a string property text and optional context
 * Response: JSON body with the AI's response text or an error message if there was a problem querying the AI.
 
+## POST /newChat
+This endpoint starts a new chat, optionally with gpt 4.
+
+* Request: JSON body with a "model" number field. If it is 4, the gpt-4 model will be selected.
+* Response: Success message or error message.
+
 ## GET /retry
 This endpoint retries the last query on the AI.
 

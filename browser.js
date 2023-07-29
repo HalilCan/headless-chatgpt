@@ -9,6 +9,10 @@ let page;
 
 const _regenButtonXPathSelector = "//button[contains(., 'Regenerate') or contains(., 'Regenerate response')]";
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
+const _newChatButtonXPathSelector = "//a[contains(., 'New chat') or contains(., 'New')]";
+// const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
+const _gptFourButtonXPathSelector = "//button[contains(., 'GPT-4')]";
+const _gptThreeButtonXPathSelector = "//button[contains(., 'GPT-3.5')]";
 const _maxWaitCount = 100;
 const _generationWaitStepLength = 500;
 const _generationInitialWaitLength = 500;
@@ -137,6 +141,10 @@ async function readLastResponse() {
     return innerHTML;
 }
 
+async function waitForNewChat() {
+    await page.$x(_gptThreeButtonXPathSelector);
+}
+
 async function waitForGenerationToComplete() {
     // console.log("enter generation waiter");
     let button;
@@ -171,6 +179,21 @@ async function waitForGenerationToComplete() {
         }
         waitCount++;
     }
+}
+
+async function newChat(modelNum) {
+    let innerHTML;
+    const clickResponse = await clickButton(_newChatButtonXPathSelector);
+    if (clickResponse === -1) {
+        return clickResponse;
+    }
+    // TODO: I think in case of errors that need regeneration, they disable the input box. Wait and see.
+    await waitForNewChat();
+    if (modelNum == 4 || modelNum == "4") {
+        const response = await clickButton(_gptFourButtonXPathSelector);
+        return response;
+    }
+    return 1;
 }
 
 async function retry() {
@@ -226,4 +249,4 @@ async function saveCookies() {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry, saveCookies };
+    queryAi, retry, saveCookies, newChat };
