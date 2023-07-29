@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const fs = require('fs');
 
 puppeteer.use(StealthPlugin());
 
@@ -22,6 +23,15 @@ async function startBrowser(){
         height: 768,
         deviceScaleFactor: 1,
     });
+
+    // getting saved cookies to avoid
+    // Load cookies from JSON file
+    try {
+        let cookies = JSON.parse(fs.readFileSync('./cookies.json', 'utf8'));
+        await page.setCookie(...cookies);
+    } catch (e) {
+    }
+
     // await page.emulate(iPad);
     // await page.emulateTimezone("Europe/Istanbul");
     await page.emulateTimezone("America/New_York");
@@ -203,7 +213,17 @@ async function queryAi(message, context) {
     return innerHTML;
 }
 
+async function saveCookies() {
+    const cookies = await page.cookies();
+    // Save cookies to a file
+    try {
+        fs.writeFileSync('./cookies.json', JSON.stringify(cookies, null, 2));
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry };
+    queryAi, retry, saveCookies };

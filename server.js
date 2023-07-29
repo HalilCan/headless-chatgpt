@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const browserModule = require('./browser');
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 const app = express();
 app.use(bodyParser.json());
@@ -12,7 +13,7 @@ app.get('/chatgpt', async (req, res) => {
         await browserModule.visitPage("https://chat.openai.com");
         res.send('Navigated to chatgpt');
     } catch (error) {
-        console.error(error);
+        console.error(error.data);
         res.status(500).send('Error navigating to chatgpt');
     }
 });
@@ -130,6 +131,8 @@ app.post('/queryAi', async (req, res) => {
         let context = req.body.context ?? "";
         const innerHtml = await browserModule.queryAi(req.body.text, context);
         res.send({"text": innerHtml});
+        // also save cookies since we've definitely logged in.
+        await browserModule.saveCookies();
     } catch (error) {
         console.error(error);
         res.status(500).send('Error in querying AI');
