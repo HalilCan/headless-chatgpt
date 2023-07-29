@@ -13,6 +13,7 @@ In essence: I did not have API access because of a strange and persistent error,
 ## Software that use Headless ChatGPT:
 - [CodeGPT Assistant](https://github.com/HalilCan/codeGPT-assistant-extension)
 - [PR Assistant](https://www.youtube.com/watch?v=AgzSUK_9FoE)
+- [Persona Generator](https://www.youtube.com/watch?v=xQByoQW1HjM)
 
 
 ## Usage
