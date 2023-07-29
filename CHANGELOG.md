@@ -1,6 +1,7 @@
 # Changelog
 
 # 1.3
+- 1.3.1: Chat type selection bug fixed.
 - 1.3.0: Can start new chats with model selection.
 
 ## 1.2

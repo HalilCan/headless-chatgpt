@@ -162,7 +162,6 @@ app.post('/newChat', async (req, res) => {
             model = req.body.model;
         }
         const actionResponse = await browserModule.newChat(model);
-        console.log('actionResponse', actionResponse);
         if (actionResponse === -1) {
             console.error('Error in starting new chat.');
             res.status(500).send('Error in starting new chat.');            
