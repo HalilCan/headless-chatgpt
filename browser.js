@@ -9,11 +9,11 @@ let page;
 
 const _regenButtonXPathSelector = "//button[contains(., 'Regenerate') or contains(., 'Regenerate response')]";
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
-const _newChatButtonXPathSelector = "//a[contains(., 'New chat') or contains(., 'New')]";
+const _newChatButtonXPathSelector = "//a[contains(., 'New chat') or contains(., 'New')][contains(@class, 'items-center')]";
 // const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
 const _gptFourButtonXPathSelector = "//button[contains(., 'GPT-4')]";
 const _gptThreeButtonXPathSelector = "//button[contains(., 'GPT-3.5')]";
-const _maxWaitCount = 100;
+const _maxWaitCount = 400;
 const _generationWaitStepLength = 500;
 const _generationInitialWaitLength = 500;
 
