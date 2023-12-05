@@ -13,7 +13,7 @@ app.get('/chatgpt', async (req, res) => {
         await browserModule.visitPage("https://chat.openai.com");
         res.send('Navigated to chatgpt');
     } catch (error) {
-        console.error(error.data);
+        console.error(error.message);
         res.status(500).send('Error navigating to chatgpt');
     }
 });
