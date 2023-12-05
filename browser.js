@@ -19,8 +19,8 @@ const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]";
 const _generalChatModeMenuButtonSelector = "//div[@role='menuitem']";
 
 const _gptSelectorButtonStub = "//div[@class='pb-0.5 last:pb-0' and ";
-const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98']";
-const _indexedGptSelectorButtonSelectorStub = "(//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98'])[";
+const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0']";
+const _indexedGptSelectorButtonSelectorStub = "(//div[@class='pb-0.5 last:pb-0'])[";
 
 const _oldChatButtonSelector = "//li[@class='relative']/div/a";
 const _firstChatButtonSelector = "(//li[@class='relative']/div/a)[1]";
