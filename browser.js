@@ -7,7 +7,9 @@ puppeteer.use(StealthPlugin());
 let browser;
 let page;
 
-const _regenButtonXPathSelector = "//button[contains(., 'Regenerate') or contains(., 'Regenerate response')]";
+// const _regenButtonXPathSelector = "//button[contains(., 'Regenerate') or contains(., 'Regenerate response')]"; 
+const _regenButtonXPathSelector = "div.text-gray-400.flex.self-end.lg:self-center.justify-center.lg:justify-start.mt-0.gap-1.visible > button:nth-child(3), div.text-gray-400.flex.self-end.lg:self-center.justify-center.lg:justify-start.mt-0.gap-1.visible > button:last-child" // as of today (5/12/2023) only the last response has a regen button. (The third child of the above div, being also a button) And thank Todd for that; he did it again.
+
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
 const _newChatButtonXPathSelector = "//a[contains(., 'New chat') or contains(., 'New')][contains(@class, 'items-center')]";
 // const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
