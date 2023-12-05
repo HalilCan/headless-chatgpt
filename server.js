@@ -52,6 +52,21 @@ app.get('/close', async (req, res) => {
     }
 });
 
+app.post('/loadMoreChats', async (req, res) => {
+    try {
+        if (!req.body.isAllChats) {
+            await browserModule.loadOlderChats(false);
+            res.send(`All older chats loaded`);
+        } else {
+            await browserModule.loadOlderChats(true);
+            res.send(`One page of older chats loaded`);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error typing in browser');
+    }
+})
+
 app.post('/type', async (req, res) => {
     try {
         if (!req.body.string) {

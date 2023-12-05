@@ -159,7 +159,7 @@ async function readLastResponse() {
     return innerHTML;
 }
 
-async function loadOlderChats(page, loadAllChats=false) {
+async function loadOlderChats(loadAllChats=false) {
     let chatCount = 0;
     let chatButtons = await page.$x("//li[@class='relative']/div/a");
     if (chatButtons.length < 3) {
@@ -298,4 +298,4 @@ async function saveCookies() {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry, saveCookies, newChat };
+    queryAi, retry, saveCookies, newChat, loadOlderChats };
