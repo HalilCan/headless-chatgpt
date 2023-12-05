@@ -234,6 +234,32 @@ async function waitForGenerationToComplete() {
     }
 }
 
+async function getGptList() {
+    let gptList = await page.$x(_gptSelectorButtons);
+    let list = [];
+
+    list.push("GPT-4");
+    list.push("GPT-3.5");
+    for (const gpt of gptList) {
+        const text = await page.evaluate(element => element.textContent, gpt);
+        if (text == "ChatGPTChatGPT") {
+            continue;
+        } else {
+            list.push(text.trim());
+        }
+    }
+
+    return list;
+}
+
+async function newChat(modelName) {
+    if (modelName == "GPT-4" || modelName == "GPT-3.5") {
+        // go through the chatgpt button -> chatgpt selector -> appropriate gpt model
+    } else {
+
+    }
+}
+
 async function newChat(modelNum) {
     const clickResponse = await clickButton(_newChatButtonXPathSelector);
     if (clickResponse === -1) {
@@ -302,4 +328,4 @@ async function saveCookies() {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry, saveCookies, newChat, loadOlderChats };
+    queryAi, retry, saveCookies, newChat, loadOlderChats, getGptList };

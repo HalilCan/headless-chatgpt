@@ -52,6 +52,16 @@ app.get('/close', async (req, res) => {
     }
 });
 
+app.get('/currentGptList', async (req, res) => {
+    try {
+        const list = await browserModule.getGptList();
+        res.send(list);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error getting the gpt list');
+    }
+});
+
 app.post('/loadMoreChats', async (req, res) => {
     try {
         if (!req.body.isAllChats) {
