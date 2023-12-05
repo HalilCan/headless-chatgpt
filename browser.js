@@ -18,6 +18,8 @@ const _gptThreeChatModeSelector = "(//div[@role='menuitem'])[2]"
 const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]"
 const _generalChatModeMenuButtonSelector = "//div[@role='menuitem']"
 
+const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98']"
+
 // const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
 const _gptFourButtonXPathSelector = "//button[contains(., 'GPT-4')]";
 const _gptThreeButtonXPathSelector = "//button[contains(., 'GPT-3.5')]";
