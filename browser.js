@@ -162,6 +162,16 @@ async function readLastResponse() {
     return innerHTML;
 }
 
+async function getChatList () {
+    const chatButtons = await page.$x("//li[@class='relative']/div/a");
+    let list = [];
+    for (const button of chatButtons) {
+        const text = await page.evaluate(element => element.textContent, button);
+        list.push(text.trim());
+    }
+    return list;
+}
+
 async function loadOlderChats(loadAllChats=false) {
     let chatCount = 0;
     let chatButtons = await page.$x("//li[@class='relative']/div/a");
@@ -256,30 +266,30 @@ async function getGptList() {
 
 async function newChat(modelName) {
     // backwards compatibility:
-    console.log(`new chat model name: ${modelName}`);
+    // console.log(`new chat model name: ${modelName}`);
     if (modelName == "4" || modelName == 4) {
         modelName = "GPT-4";
     }
     if (modelName == "3" || modelName == 3) {
         modelName = "GPT-3.5";
     }
-    console.log(`new chat modified model name: ${modelName}`);
+    // console.log(`new chat modified model name: ${modelName}`);
     if (modelName == "GPT-4" || modelName == "GPT-3.5") {
         // go through the chatgpt button -> chatgpt selector -> appropriate gpt model
-        console.log(`new chat gpt 4 or 3.5 detected`);
+        // console.log(`new chat gpt 4 or 3.5 detected`);
         let clickResponse = await clickButton(_indexedGptSelectorButtonSelectorStub + "2]");
         if (clickResponse === -1) {
             console.error("Error: cannot click top chatgpt button for new chat");
             return clickResponse;
         }
-        console.log(`in new chatgpt`);
+        // console.log(`in new chatgpt`);
         await waitForNewChat();
         clickResponse = clickButton(_currentGptModeButtonSelector);
         if (clickResponse === -1) {
             console.error("Error: cannot click gpt selector dropdown menu");
             return clickResponse;
         }
-        console.log(`dropdown dropped`);
+        // console.log(`dropdown dropped`);
         await timeout(500);
         if (modelName == "GPT-4") {
             clickResponse = clickButton(_gptFourChatModeSelector);
@@ -294,7 +304,7 @@ async function newChat(modelName) {
                 return clickResponse;
             }
         }
-        console.log(`selected from dropdown`);
+        // console.log(`selected from dropdown`);
     } else {
         // e.g. //div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98' and contains(., "Hot Mods")] works
         const gptSelector = _gptSelectorButtonStub + `contains(., "${modelName}")]`;
@@ -362,4 +372,4 @@ async function saveCookies() {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry, saveCookies, newChat, loadOlderChats, getGptList };
+    queryAi, retry, saveCookies, newChat, loadOlderChats, getGptList, getChatList };

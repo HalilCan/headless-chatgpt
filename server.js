@@ -52,6 +52,16 @@ app.get('/close', async (req, res) => {
     }
 });
 
+app.get('/currentChatList', async (req, res) => {
+    try {
+        const list = await browserModule.getChatList();
+        res.send(list);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error getting the chat list');
+    }
+});
+
 app.get('/currentGptList', async (req, res) => {
     try {
         const list = await browserModule.getGptList();
@@ -186,7 +196,7 @@ app.post('/newChat', async (req, res) => {
         } else {
             model = req.body.model;
         }
-        console.log(`model: ${model}`);
+        // console.log(`model: ${model}`);
         const actionResponse = await browserModule.newChat(model);
         if (actionResponse === -1) {
             console.error('Error in starting new chat.');
