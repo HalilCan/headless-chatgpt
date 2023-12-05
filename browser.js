@@ -12,15 +12,17 @@ const _continueButtonXPathSelector = "//button[contains(., 'Continue generating'
 const _newChatButtonXPathSelector = "(//a[@href="/" and contains(text(), chatgpt)])[2]";
 //new chat button attempts: //a[@class='group flex h-10 items-center gap-2 rounded-lg px-2 font-medium hover:bg-token-surface-primary' and contains(., Chatgpt) and .//svg]
 
-const _currentGptModeButtonSelector = "//div[@class='group flex cursor-pointer items-center gap-1 rounded-xl py-2 px-3 text-lg font-medium hover:bg-gray-50 radix-state-open:bg-gray-50 dark:hover:bg-black/10 dark:radix-state-open:bg-black/20']"
-const _gptFourChatModeSelector = "(//div[@role='menuitem'])[1]"
-const _gptThreeChatModeSelector = "(//div[@role='menuitem'])[2]"
-const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]"
-const _generalChatModeMenuButtonSelector = "//div[@role='menuitem']"
+const _currentGptModeButtonSelector = "//div[@class='group flex cursor-pointer items-center gap-1 rounded-xl py-2 px-3 text-lg font-medium hover:bg-gray-50 radix-state-open:bg-gray-50 dark:hover:bg-black/10 dark:radix-state-open:bg-black/20']";
+const _gptFourChatModeSelector = "(//div[@role='menuitem'])[1]";
+const _gptThreeChatModeSelector = "(//div[@role='menuitem'])[2]";
+const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]";
+const _generalChatModeMenuButtonSelector = "//div[@role='menuitem']";
 
-const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98']"
+const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98']";
 
-const _oldChatButtonSelector = "//li[@class='relative']/div/a"
+const _oldChatButtonSelector = "//li[@class='relative']/div/a";
+const _firstChatButtonSelector = "(//li[@class='relative']/div/a)[1]";
+const _lastChatButtonSelector = "(//li[@class='relative']/div/a)[last()]" // this is for scrolling down so that chatgpt gives us older chats as well.
 
 // const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
 const _gptFourButtonXPathSelector = "//button[contains(., 'GPT-4')]";
