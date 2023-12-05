@@ -23,6 +23,9 @@ const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0']";
 const _indexedGptSelectorButtonSelectorStub = "(//div[@class='pb-0.5 last:pb-0'])[";
 
 const _oldChatButtonSelector = "//li[@class='relative']/div/a";
+const _oldChatButtonSelectorTextStub = "//li[@class='relative']/div/a[contains(.,"; // add "STRING)]"
+// working completed stub: //li[@class='relative']/div/a[contains(.,xpath)] no quotes at the end, strangely enough.
+
 const _firstChatButtonSelector = "(//li[@class='relative']/div/a)[1]";
 const _lastChatButtonSelector = "(//li[@class='relative']/div/a)[last()]" // this is for scrolling down so that chatgpt gives us older chats as well.
 
@@ -160,6 +163,16 @@ async function readLastResponse() {
     const answerSelector = "div .markdown";
     let innerHTML = await getInnerHtmlOfLastElem(answerSelector);
     return innerHTML;
+}
+
+async function goToChat(chatName) {
+    const chatSelector = _oldChatButtonSelectorTextStub + "\"" +  chatName + "\")]";
+    clickResponse = clickButton(chatSelector);
+    if (clickResponse === -1) {
+        console.error(`Error: cannot click chat button for ${chatName}`);
+        return clickResponse;
+    }
+    return 0;
 }
 
 async function getChatList () {
@@ -372,4 +385,4 @@ async function saveCookies() {
 
 module.exports = { startBrowser, visitPage, closeBrowser, type, selectElem, 
     selectElemWithIndex, writeInTextArea, getInnerHtmlOfLastElem,
-    queryAi, retry, saveCookies, newChat, loadOlderChats, getGptList, getChatList };
+    queryAi, retry, saveCookies, newChat, loadOlderChats, getGptList, getChatList, goToChat};

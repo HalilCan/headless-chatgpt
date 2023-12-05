@@ -188,6 +188,27 @@ app.get('/retry', async (req, res) => {
     }
 })
 
+app.post('/selectChat', async (req, res) => {
+    try {
+        if (!req.body.chatName) {
+            res.status(500).send(`Please include chatName in your request body`);
+            return;
+        }
+        let chatName = req.body.chatName;
+        // console.log(`model: ${model}`);
+        const actionResponse = await browserModule.goToChat(chatName);
+        if (actionResponse === -1) {
+            console.error(`Error in selecting chat: ${chatName}`);
+            res.status(500).send(`Error in selecting chat: ${chatName}`);            
+        } else {
+            res.send('Chat selected.');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(`Error in selecting existing chat.`);
+    }
+})
+
 app.post('/newChat', async (req, res) => {
     try {
         let model;
