@@ -24,6 +24,8 @@ const _oldChatButtonSelector = "//li[@class='relative']/div/a";
 const _firstChatButtonSelector = "(//li[@class='relative']/div/a)[1]";
 const _lastChatButtonSelector = "(//li[@class='relative']/div/a)[last()]" // this is for scrolling down so that chatgpt gives us older chats as well.
 
+const _chatHistoryContainerSelector = "//nav[@aria-label='Chat history']"
+
 // const _gptFourButtonXPathSelector = "//div[contains(., 'GPT-4')][contains(@class, 'group/button')]";
 const _gptFourButtonXPathSelector = "//button[contains(., 'GPT-4')]";
 const _gptThreeButtonXPathSelector = "//button[contains(., 'GPT-3.5')]";
@@ -67,10 +69,12 @@ async function closeBrowser(){
     await browser.close();
 }
 
-async function selectElem(selector) {
+async function selectElem(selector, click=true) {
     const element = await page.waitForSelector(selector);
     //
-    await element.click();
+    if (click) {
+        await element.click();
+    }
     return element;
 }
 
@@ -153,6 +157,33 @@ async function readLastResponse() {
     const answerSelector = "div .markdown";
     let innerHTML = await getInnerHtmlOfLastElem(answerSelector);
     return innerHTML;
+}
+
+async function loadOlderChats(page, loadAllChats=false) {
+    let chatCount = 0;
+    let chatButtons = await page.$x("//li[@class='relative']/div/a");
+    if (chatButtons.length < 3) {
+        return;
+    }
+    
+    if (loadAllChats) {
+        while (chatCount != chatButtons.length) {
+            const secondLastElement = targetElems[targetElems.length - 2];
+            await page.evaluate(element => {
+                element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, secondLastElement);
+
+            await timeout(_generationInitialWaitLength / 2);
+            chatButtons = await page.$x("//li[@class='relative']/div/a");     
+            chatCount = chatButtons.length;
+        }
+    } else {
+        const secondLastElement = targetElems[targetElems.length - 2];
+        await page.evaluate(element => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, secondLastElement);
+        await timeout(_generationInitialWaitLength / 2);
+    }
 }
 
 async function waitForNewChat() {
