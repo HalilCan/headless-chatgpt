@@ -18,7 +18,9 @@ const _gptThreeChatModeSelector = "(//div[@role='menuitem'])[2]";
 const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]";
 const _generalChatModeMenuButtonSelector = "//div[@role='menuitem']";
 
+const _gptSelectorButtonStub = "//div[@class='pb-0.5 last:pb-0' and ";
 const _gptSelectorButtons = "//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98']";
+const _indexedGptSelectorButtonSelectorStub = "(//div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98'])[";
 
 const _oldChatButtonSelector = "//li[@class='relative']/div/a";
 const _firstChatButtonSelector = "(//li[@class='relative']/div/a)[1]";
@@ -191,10 +193,10 @@ async function loadOlderChats(loadAllChats=false) {
 }
 
 async function waitForNewChat() {
-    let button = await page.$x(_gptThreeButtonXPathSelector);
+    let button = await page.$x(_currentGptModeButtonSelector);
     while (!button || button.length == 0) {
         await timeout(_generationInitialWaitLength);
-        button = await page.$x(_gptThreeButtonXPathSelector);
+        button = await page.$x(_currentGptModeButtonSelector);
     }
 }
 
@@ -253,26 +255,58 @@ async function getGptList() {
 }
 
 async function newChat(modelName) {
+    // backwards compatibility:
+    console.log(`new chat model name: ${modelName}`);
+    if (modelName == "4" || modelName == 4) {
+        modelName = "GPT-4";
+    }
+    if (modelName == "3" || modelName == 3) {
+        modelName = "GPT-3.5";
+    }
+    console.log(`new chat modified model name: ${modelName}`);
     if (modelName == "GPT-4" || modelName == "GPT-3.5") {
         // go through the chatgpt button -> chatgpt selector -> appropriate gpt model
+        console.log(`new chat gpt 4 or 3.5 detected`);
+        let clickResponse = await clickButton(_indexedGptSelectorButtonSelectorStub + "2]");
+        if (clickResponse === -1) {
+            console.error("Error: cannot click top chatgpt button for new chat");
+            return clickResponse;
+        }
+        console.log(`in new chatgpt`);
+        await waitForNewChat();
+        clickResponse = clickButton(_currentGptModeButtonSelector);
+        if (clickResponse === -1) {
+            console.error("Error: cannot click gpt selector dropdown menu");
+            return clickResponse;
+        }
+        console.log(`dropdown dropped`);
+        await timeout(500);
+        if (modelName == "GPT-4") {
+            clickResponse = clickButton(_gptFourChatModeSelector);
+            if (clickResponse === -1) {
+                console.error("Error: cannot click gpt-4 button in the dropdown gpt selector menu");
+                return clickResponse;
+            }
+        } else {
+            clickResponse = clickButton(_gptThreeChatModeSelector);
+            if (clickResponse === -1) {
+                console.error("Error: cannot click gpt-4 button in the dropdown gpt selector menu");
+                return clickResponse;
+            }
+        }
+        console.log(`selected from dropdown`);
     } else {
-
+        // e.g. //div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98' and contains(., "Hot Mods")] works
+        const gptSelector = _gptSelectorButtonStub + `contains(., "${modelName}")]`;
+        console.log(gptSelector);
+        const clickResponse = await clickButton(gptSelector);
+        if (clickResponse === -1) {
+            console.error("Error: cannot click gpt button for new chat");
+            return clickResponse;
+        }
+        await waitForNewChat();
+        return 0;
     }
-}
-
-async function newChat(modelNum) {
-    const clickResponse = await clickButton(_newChatButtonXPathSelector);
-    if (clickResponse === -1) {
-        console.error("Error: cannot click new chat");
-        return clickResponse;
-    }
-    // TODO: I think in case of errors that need regeneration, they disable the input box. Wait and see.
-    await waitForNewChat();
-    if (modelNum == 4 || modelNum == "4") {
-        const response = await clickButton(_gptFourButtonXPathSelector);
-        return response;
-    }
-    return 1;
 }
 
 async function retry() {
