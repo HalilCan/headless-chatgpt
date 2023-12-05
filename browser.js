@@ -32,6 +32,7 @@ const _gptThreeButtonXPathSelector = "//button[contains(., 'GPT-3.5')]";
 const _maxWaitCount = 400;
 const _generationWaitStepLength = 500;
 const _generationInitialWaitLength = 500;
+const _olderChatLoadTime = _generationInitialWaitLength * 6;
 
 async function startBrowser(){
     browser = await puppeteer.launch({
@@ -167,18 +168,21 @@ async function loadOlderChats(loadAllChats=false) {
     }
     
     if (loadAllChats) {
-        while (chatCount != chatButtons.length) {
-            const secondLastElement = targetElems[targetElems.length - 2];
+        let oldChatCount = chatCount;
+        chatCount = chatButtons.length;
+        while (oldChatCount != chatCount) {
+            const secondLastElement = chatButtons[chatButtons.length - 2];
             await page.evaluate(element => {
                 element.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }, secondLastElement);
 
-            await timeout(_generationInitialWaitLength / 2);
+            await timeout(_olderChatLoadTime);
             chatButtons = await page.$x("//li[@class='relative']/div/a");     
+            oldChatCount = chatCount;
             chatCount = chatButtons.length;
         }
     } else {
-        const secondLastElement = targetElems[targetElems.length - 2];
+        const secondLastElement = chatButtons[chatButtons.length - 2];
         await page.evaluate(element => {
             element.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }, secondLastElement);

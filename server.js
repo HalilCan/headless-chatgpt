@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.get('/chatgpt', async (req, res) => {
     try {
         await browserModule.startBrowser();
-        await browserModule.visitPage("https://chat.openai.com");
+        await browserModule.visitPage("https://chat.openai.com/");
         res.send('Navigated to chatgpt');
     } catch (error) {
         console.error(error.message);
@@ -56,14 +56,14 @@ app.post('/loadMoreChats', async (req, res) => {
     try {
         if (!req.body.isAllChats) {
             await browserModule.loadOlderChats(false);
-            res.send(`All older chats loaded`);
+            res.send(`One page of older chats loaded`);
         } else {
             await browserModule.loadOlderChats(true);
-            res.send(`One page of older chats loaded`);
+            res.send(`All older chats loaded`);
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Error typing in browser');
+        res.status(500).send('Error loading older chats');
     }
 })
 
