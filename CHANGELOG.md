@@ -1,5 +1,12 @@
 # Changelog
 
+# 2.0
+- 2.0.0:
+    - The big fix: Openai changed the chatgpt interface sufficiently to break some existing functionality. This has been fixed.
+    - New: Load and select older chats up to your first chat, if desired.
+    - New: Select desired GPT model from the base models (4, 3.5, and Classic) in addition to whatever GPTs you have in your recent list.
+    - New: Old cookies are now purged more cleanly, preventing the case where you are erroneously asked to log-in too many times - despite already logging in a previous session.
+
 # 1.3
 - 1.3.1: Chat type selection bug fixed.
 - 1.3.0: Can start new chats with model selection.

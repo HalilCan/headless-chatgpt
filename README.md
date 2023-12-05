@@ -29,7 +29,7 @@ Check the **API paths documentation** below for the API itself.
 # API Paths Documentation
 The server runs on a default port of 3000, unless specified otherwise when starting the server.
 
-All you *really* need to get started with ChatGPT is `/queryAi` and `/retry`. Use the former to emulate 
+All you *really* need to get started with ChatGPT are `/queryAi` and `/retry`.
 
 ## GET /chatgpt
 This endpoint navigates the browser to the ChatGPT page.
@@ -52,6 +52,16 @@ This endpoint visits a specified URL.
 This endpoint closes the browser.
 
 * Response: Success message or an error message if there was a problem closing the browser.
+
+## GET /currentChatList
+This endpoint returns an array of the currently loaded chat names on the sidebar.
+
+* Response: Either returns the list/array of past chats, or returns an error message.
+
+## GET /currentGptList
+This endpoint returns an array of the currently loaded gpt names on the sidebar, in addition to "GPT-4" and "GPT-3.5" even though they are hidden behind more clicks normally.
+
+* Response: Either returns the list/array of recently used and available GPTs, or returns an error message.
 
 ## POST /type
 This endpoint types a string into the browser.
@@ -77,7 +87,6 @@ This endpoint gets the inner HTML of the selected element in the browser.
 * Request: JSON body with a string property selector
 * Response: JSON body with the innerHtml of the selected element or an error message if there was a problem retrieving the inner HTML.
 
-
 ## POST /getInnerHtmlOfLast
 This endpoint gets the inner HTML of the last element that matches the provided selector in the browser.
 
@@ -91,9 +100,21 @@ This endpoint queries the AI with the provided text and optional context.
 * Response: JSON body with the AI's response text or an error message if there was a problem querying the AI.
 
 ## POST /newChat
-This endpoint starts a new chat, optionally with gpt 4.
+This endpoint starts a new chat with the desired model or gpt. Defaults to GPT-3.5.
 
-* Request: JSON body with a "model" number field. If it is 4, the gpt-4 model will be selected.
+* Request: JSON body with a "model" string field. This must contain the name of the GPT as it appears on the recent GPTs list, or it must contain one of "GPT-4" or "GPT-3.5". For backwards compatibility, sending "3" or "4" is also fine. Refer to `GET /currentGptList` for the exact strings.
+* Response: Success message or error message.
+
+## POST /selectChat
+This endpoint selects and navigates to a previous chat the link to which is currently on the sidebar.
+
+* Request: JSON body with a "chatName" string field. This must contain the name as it appears on the sidebar, or as has been received by the `GET /currentChatList` path. In case of conflicts, go with the latter.
+* Response: Success message or error message.
+
+## POST /loadMoreChats
+This endpoint loads more past chats onto the sidebar.
+
+* Request: Optional JSON body with a "isAllChats" field. If this field exists in the request, _all_ previous chats will be loaded onto the sidebar. This is a lengthy process and may lead to natural timeouts, depending on how many you have. A single update step without that is much faster in comparison.
 * Response: Success message or error message.
 
 ## GET /retry
