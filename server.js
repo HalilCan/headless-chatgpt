@@ -3,8 +3,12 @@ const axios = require('axios');
 const browserModule = require('./browser');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+// temporary:
+const cors = require('cors');
 
 const app = express();
+// temporary: (uninstall cors after done)
+app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/chatgpt', async (req, res) => {

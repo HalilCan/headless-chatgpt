@@ -7,7 +7,9 @@ puppeteer.use(StealthPlugin());
 let browser;
 let page;
 
-const _regenButtonXPathSelector = "//div[@class='text-gray-400 flex self-end lg:self-center justify-center lg:justify-start mt-0 gap-1 visible']/button[2]" // as of today (5/12/2023) only the last response has a regen button. (The third child of the above div, being also a button) And thank Todd for that; he did it again.
+// const _regenButtonXPathSelector = "//div[@class='text-gray-400 flex self-end lg:self-center justify-center lg:justify-start mt-0 gap-1 visible']/button[2]" // as of today (5/12/2023) only the last response has a regen button. (The third child of the above div, being also a button) And thank Todd for that; he did it again.
+const _regenButtonXPathSelector = "//div[contains(@class, 'text-gray-400 flex')]/span[2]/button";
+
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
 const _newChatButtonXPathSelector = "(//a[@href="/" and contains(text(), chatgpt)])[2]";
 //new chat button attempts: //a[@class='group flex h-10 items-center gap-2 rounded-lg px-2 font-medium hover:bg-token-surface-primary' and contains(., Chatgpt) and .//svg]
@@ -230,9 +232,9 @@ async function waitForGenerationToComplete() {
     // sometimes our query doesn't "take" quickly, and the regenerate button from the last time around stays. This waits until that is done.
     button = await page.$x(_regenButtonXPathSelector);
     if (button && button.length > 0) {
-        // console.log("first generation wait loop");
+        console.log("first generation wait loop");
         while (button && button.length > 0) {
-            // console.log("first generation inner loop, button:", button);
+            console.log("first generation inner loop, button:", button);
             await timeout(_generationInitialWaitLength);
             button = await page.$x(_regenButtonXPathSelector); 
         }
@@ -241,7 +243,7 @@ async function waitForGenerationToComplete() {
 
     // this just waits until the next regenerate button (which appears at the end of AI output) appears. If continue does so too, we press that and wait until done.
     while (waitCount < _maxWaitCount) {
-        // console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
+        console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
         await timeout(_generationWaitStepLength);
         button = await page.$x(_regenButtonXPathSelector);
         if (button.length > 0) {
@@ -257,6 +259,7 @@ async function waitForGenerationToComplete() {
         }
         waitCount++;
     }
+    console.log("generation complete");
 }
 
 async function getGptList() {
@@ -353,22 +356,23 @@ async function queryAi(message, context) {
         queryString = message + "\n WITH THE BELOW CONTEXT: \n" + context + "\n";
     }
     const inputSelector = "TextArea";
-    const answerSelector = "div .markdown";
+    // from div .markdown
+    const answerSelector = "div .max-w-full";
 
     await inputStringInSelector(inputSelector, queryString);
     // include the \n in the string because this doesn't work for some reason.
     // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
     await writeInTextArea(inputSelector, "\n");
-    // console.log("the long wait beginn");
+    console.log("the long wait beginn");
     
     await waitForGenerationToComplete();
     
-    // console.log("the long wait ENDS");
+    console.log("the long wait ENDS");
 
     // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
     innerHTML += await getInnerHtmlOfLastElem(answerSelector);
-    // console.log(innerHTML);
+    console.log(innerHTML);
     return innerHTML;
 }
 
