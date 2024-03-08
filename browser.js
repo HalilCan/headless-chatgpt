@@ -4,17 +4,19 @@ const fs = require('fs');
 
 puppeteer.use(StealthPlugin());
 
+const _DEBUG = false;
+
 let browser;
 let page;
 
 // const _regenButtonXPathSelector = "//div[@class='text-gray-400 flex self-end lg:self-center justify-center lg:justify-start mt-0 gap-1 visible']/button[2]" // as of today (5/12/2023) only the last response has a regen button. (The third child of the above div, being also a button) And thank Todd for that; he did it again.
-const _regenButtonXPathSelector = "//div[contains(@class, 'text-gray-400 flex')]/span[2]/button";
+const _regenButtonXPathSelector = "//div[contains(@class, 'text-gray-400 flex')]/span[3]/button";
 
 const _continueButtonXPathSelector = "//button[contains(., 'Continue generating') or contains(., 'Continue')]";
 const _newChatButtonXPathSelector = "(//a[@href="/" and contains(text(), chatgpt)])[2]";
 //new chat button attempts: //a[@class='group flex h-10 items-center gap-2 rounded-lg px-2 font-medium hover:bg-token-surface-primary' and contains(., Chatgpt) and .//svg]
 
-const _currentGptModeButtonSelector = "//div[@class='group flex cursor-pointer items-center gap-1 rounded-xl py-2 px-3 text-lg font-medium hover:bg-gray-50 radix-state-open:bg-gray-50 dark:hover:bg-black/10 dark:radix-state-open:bg-black/20']";
+const _currentGptModeButtonSelector = "//div[@class='group flex cursor-pointer items-center gap-1 rounded-xl py-2 px-3 text-lg font-medium hover:bg-gray-50 radix-state-open:bg-gray-50 ddark:hover:bg-black/10 dark:radix-state-open:bg-black/20']";
 const _gptFourChatModeSelector = "(//div[@role='menuitem'])[1]";
 const _gptThreeChatModeSelector = "(//div[@role='menuitem'])[2]";
 const _pluginsChatModeSelector = "(//div[@role='menuitem'])[3]";
@@ -232,9 +234,13 @@ async function waitForGenerationToComplete() {
     // sometimes our query doesn't "take" quickly, and the regenerate button from the last time around stays. This waits until that is done.
     button = await page.$x(_regenButtonXPathSelector);
     if (button && button.length > 0) {
-        console.log("first generation wait loop");
+        if (_DEBUG) {
+            console.log("first generation wait loop");
+        }
         while (button && button.length > 0) {
-            console.log("first generation inner loop, button:", button);
+            if (_DEBUG) {
+                console.log("first generation inner loop, button:", button);
+            }
             await timeout(_generationInitialWaitLength);
             button = await page.$x(_regenButtonXPathSelector); 
         }
@@ -243,7 +249,9 @@ async function waitForGenerationToComplete() {
 
     // this just waits until the next regenerate button (which appears at the end of AI output) appears. If continue does so too, we press that and wait until done.
     while (waitCount < _maxWaitCount) {
-        console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
+        if (_DEBUG) {
+            console.log(`second generation wait loop : ${waitCount} / ${_maxWaitCount}`);
+        }
         await timeout(_generationWaitStepLength);
         button = await page.$x(_regenButtonXPathSelector);
         if (button.length > 0) {
@@ -259,7 +267,10 @@ async function waitForGenerationToComplete() {
         }
         waitCount++;
     }
-    console.log("generation complete");
+    
+    if (_DEBUG) {
+        console.log("generation complete");
+    }
 }
 
 async function getGptList() {
@@ -324,7 +335,10 @@ async function newChat(modelName) {
     } else {
         // e.g. //div[@class='pb-0.5 last:pb-0' and @data-projection-id!='98' and contains(., "Hot Mods")] works
         const gptSelector = _gptSelectorButtonStub + `contains(., "${modelName}")]`;
-        console.log(gptSelector);
+        
+        if (_DEBUG) {
+            console.log(gptSelector);
+        }
         const clickResponse = await clickButton(gptSelector);
         if (clickResponse === -1) {
             console.error("Error: cannot click gpt button for new chat");
@@ -364,15 +378,23 @@ async function queryAi(message, context) {
     // okay, that didn't work too - but using type for \n twice did.
     await writeInTextArea(inputSelector, "\n");
     await writeInTextArea(inputSelector, "\n");
-    console.log("the long wait beginn");
+    
+    if (_DEBUG) {
+        console.log("the long wait begins");
+    }
     
     await waitForGenerationToComplete();
     
-    console.log("the long wait ENDS");
+    if (_DEBUG) {
+        console.log("the long wait ENDS");
+    }
 
     // const innerHTML = oldReturnMd || await getInnerHtmlOfLastElem(answerSelector);
     innerHTML += await getInnerHtmlOfLastElem(answerSelector);
-    console.log(innerHTML);
+    
+    if (_DEBUG) {
+        console.log(innerHTML);
+    }
     return innerHTML;
 }
 
