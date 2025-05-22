@@ -1,0 +1,35 @@
+{
+    "buttons":{
+        "regenerateLastMessage": "//div[@role='menuitem']//div[contains(text(), 'Try again')]",
+        "regenerateLastMessageWithWebSearch": "//div[@role='menuitem']//div[contains(text(), 'Search the web')]",
+        "TODOchatToolbars": "(//div[contains(@class, 'agent-turn')]//div[contains(@class, 'justify-start')]/div)[last()]",
+        "lastResponseChatToolbar": "(//div[contains(@class, 'agent-turn')]//div[contains(@class, 'justify-start')]/div)[last()]",
+        "newChat": "//div[@id='sidebar']//a[@title='ChatGPT']",
+        "modelSwitcherDropdown": "//div[@id='page-header']//button[@data-testid='model-switcher-dropdown-button']",
+        "modelSwitcherFirstMenu": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']",
+        "modelSwitcherButtons": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']/div",
+        "modelSwitcherModels": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']/div",
+        "additionalModelSwitcherDropdown": "//div[@data-testid='more-models-submenu']",
+        "additionalModelSwitcherDropdownDumbAlt": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']/div[last()]",
+        "additionalModelsButtons": "//div[@role='menu' and @data-side='right']/div",
+        "addPhotosAndFilesDropdown": "//button[@id='upload-file-btn']",
+        "addPhotosAndFilesLocal": "//div[@role='menuitem']//span[normalize-space(.)='Add photos and files']",
+        "historyChatItem": "//div[@id='history']//li[@class='relative']/div/a",
+        "viewPlans": "//nav[@aria-label='Chat history']/div[contains(@class,'sticky') and contains(@class, 'bottom-0')]",
+        "submit": "//button[@id='composer-submit-button']",
+        "lastMessageModelChanger": "((//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]//div[contains(concat(' ', normalize-space(@class), ' '), ' end-0 ') and contains(concat(' ', normalize-space(@class), ' '), ' justify-start ') and not(contains(concat(' ', normalize-space(@class), ' '), ' items-center '))])[last()]/div/span)[last()]/button",
+        "stopStreaming": "//button[@aria-label='Stop streaming']",
+        "chatGPTSidebarButton": "//div[@id='sidebar']/div//a[@title='ChatGPT']"
+    },
+    "fields": {
+        "promptTextAreaDiv": "//div[@id='prompt-textarea']",
+        "promptTextArea": "//form[@data-type='unified-composer']//textarea[contains(concat(' ', normalize-space(@class), ' '), ' text-token-text-primary ')]"
+    },
+    "content": {
+        "responses": "//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]//div[contains(concat(' ', normalize-space(@class), ' '), ' prose ')]",
+        "bigChatContainer": "//main[@id='main']",
+        "splashScreenText": "//h1//div[contains(concat(' ', normalize-space(@class), ' '), ' text-pretty ')]"
+    }
+}
+
+

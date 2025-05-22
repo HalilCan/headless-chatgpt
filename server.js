@@ -136,7 +136,7 @@ app.post('/typeInElem', async (req, res) => {
 app.post('/getInnerHtml', async (req, res) => {
     try {
         if (!req.body.selector) {
-            res.send('Please provide a valid selector.');
+            res.send('Please provide a valid XPath selector.');
             return;
         }
         const innerHtml = await browserModule.getInnerHtml(req.body.selector);
@@ -150,7 +150,7 @@ app.post('/getInnerHtml', async (req, res) => {
 app.post('/getInnerHtmlOfLast', async (req, res) => {
     try {
         if (!req.body.selector) {
-            res.send('Please provide a valid selector.');
+            res.send('Please provide a valid XPath selector.');
             return;
         }
         const innerHtml = await browserModule.getInnerHtmlOfLastElem(req.body.selector);
@@ -170,11 +170,19 @@ app.post('/queryAi', async (req, res) => {
         let context = req.body.context ?? "";
         const innerHtml = await browserModule.queryAi(req.body.text, context);
         res.send({"text": innerHtml});
-        // also save cookies since we've definitely logged in.
-        await browserModule.saveCookies();
     } catch (error) {
         console.error(error);
         res.status(500).send('Error in querying AI');
+    }
+})
+
+app.post('/cancelGen', async (req, res) => {
+    try {
+        const browserResponse = await browserModule.cancelGeneration();
+        res.send({"text": browserResponse});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error in canceling generation');
     }
 })
 
@@ -199,7 +207,6 @@ app.post('/selectChat', async (req, res) => {
             return;
         }
         let chatName = req.body.chatName;
-        // console.log(`model: ${model}`);
         const actionResponse = await browserModule.goToChat(chatName);
         if (actionResponse === -1) {
             console.error(`Error in selecting chat: ${chatName}`);
@@ -215,19 +222,19 @@ app.post('/selectChat', async (req, res) => {
 
 app.post('/newChat', async (req, res) => {
     try {
-        let model;
-        if (!req.body.model) {
-            model = 3;
+        let modelName;
+        if (!req.body.modelName) {
+            modelName = "GPT-4o";
         } else {
-            model = req.body.model;
+            modelName = req.body.modelName;
         }
-        // console.log(`model: ${model}`);
-        const actionResponse = await browserModule.newChat(model);
+        const actionResponse = await browserModule.newChat(modelName);
         if (actionResponse === -1) {
             console.error('Error in starting new chat.');
             res.status(500).send('Error in starting new chat.');            
         } else {
-            res.send('New chat started');
+            console.log(actionResponse);
+            res.send(actionResponse);
         }
     } catch (error) {
         console.error(error);
@@ -243,5 +250,4 @@ const port = process.argv[2] || defaultPort;
 app.listen(port, async () => {
     console.log(`ChatGPT API server running on port ${port}`);
     const response = await axios.get(`http://localhost:${port}/chatgpt`);
-    // console.log(response.data);
 });

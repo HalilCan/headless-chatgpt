@@ -2,3 +2,4 @@ node_modules
 cookies*
 package-lock*
 package-lock.json
+headless-chatgpt-user-data*

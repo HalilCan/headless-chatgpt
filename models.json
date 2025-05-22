@@ -1,0 +1,5 @@
+{
+    "fullList": ["GPT-4o", "o3", "o4-mini", "o4-mini-high", "GPT-4.5", "GPT-4.1", "GPT-4.1-mini"],
+    "basicModelsList": ["GPT-4o", "o3", "o4-mini", "o4-mini-high"],
+    "moreModelsList": ["GPT-4.5", "GPT-4.1", "GPT-4.1-mini"]
+}
