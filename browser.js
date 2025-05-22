@@ -440,6 +440,15 @@ async function getGptList() {
         console.log("[6] All models found (main + additional):", list);
     }
 
+    if (_DEBUG) {
+        console.log("[7] Closing modelSwitcherDropdown...");
+    }
+    await page.waitForXPath(selectors.buttons.modelSwitcherDropdown, {
+        visible: true,
+    });
+    if (!dropdownBtn) throw new Error("modelSwitcherDropdown not found");
+    await dropdownBtn.click();
+
     return list;
 }
 
