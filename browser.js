@@ -184,7 +184,9 @@ async function clickButton(selector) {
 
 // WARNING: Receiving by markdown currently uses the host's clipboard.
 async function readLastResponse({ type }) {
-    console.log(`copying type: ${type}`);
+    if (_DEBUG) {
+        console.log(`copying type: ${type}`);
+    }
     // const answerSelector = "div .markdown";
     if (type === "copy") {
         // to copy:
@@ -218,8 +220,10 @@ async function readLastResponse({ type }) {
             if (ta) ta.remove();
         });
 
-        console.log(`copiedContent: ${copiedContent}`);
-        // PROBLEM: ChatGPT automatically strips Cline/Roo's preferred xml/html style tags (or the <p> blocks with such tags in them - either way unworkable). So this is a no go for them. Do raw only.
+        if (_DEBUG) {
+            console.log(`copiedContent: ${copiedContent}`);
+        }
+        // PROBLEM: ChatGPT automatically strips Cline/Roo's preferred xml/html style tags (or the <p> blocks with such tags in them - either way unworkable). So this is a no go for them. Do raw only. It could also be stripping paragraphs enclosed fully by tags.
         return copiedContent;
     } else if (type === "raw") {
         // const answerSelector = selectors.content.responses;
@@ -227,7 +231,7 @@ async function readLastResponse({ type }) {
         // return innerHTML;
 
         // 1. Use XPath to get all *assistant message* nodes (with data-message-id)
-        const messageBlockXPath = selectors.content.messageBlocks; // Should be correct XPath!
+        const messageBlockXPath = selectors.content.messageBlocks;
         const allMessages = await page.evaluate((messageBlockXPath) => {
             function getNodesByXPath(xpath) {
                 let results = [];
@@ -262,11 +266,16 @@ async function readLastResponse({ type }) {
             }));
         }, messageBlockXPath);
 
-        console.log("\n\nallMessages:", allMessages);
+        if (_DEBUG) {
+            console.log("\n\nallMessages:", allMessages);
+        }
 
         const seenIds = new Set(lastAssistantMessages.map(m => m.id));
         let newMessages = allMessages.filter(m => !seenIds.has(m.id));
+
+        if (_DEBUG) {
         console.log("\n\nnewMessages:", newMessages);
+        }
 
         lastAssistantMessages = allMessages;
 
@@ -832,7 +841,7 @@ async function scrollToBottomOfXPath({
     );
 }
 
-async function queryAi(message, context) {
+async function queryAi(message, context, extractMethod = "raw") {
     let queryString, innerHTML;
     if (context === "") {
         queryString = message + "\n";
@@ -851,7 +860,7 @@ async function queryAi(message, context) {
         return "Error: Generation did not complete successfully";
     }
 
-    innerHTML = await readLastResponse({ type: "raw" });
+    innerHTML = await readLastResponse({ type: extractMethod });
 
     if (_DEBUG) {
         console.log(innerHTML);

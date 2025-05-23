@@ -178,7 +178,8 @@ app.post('/queryAi', async (req, res) => {
             return;
         }
         let context = req.body.context ?? "";
-        const innerHtml = await browserModule.queryAi(req.body.text, context);
+        let extractMethod = req.body.extractMethod ?? "copy";
+        let innerHtml = await browserModule.queryAi(req.body.text, context, extractMethod);
         res.send({ "text": innerHtml });
     } catch (error) {
         console.error(error);
