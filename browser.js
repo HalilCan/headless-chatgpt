@@ -314,6 +314,7 @@ async function goToChat(chatName) {
 }
 
 async function getChatList() {
+    // await loadOlderChats(false);
     const chatButtons = await page.$x(selectors.buttons.historyChatItem);
     let list = [];
     for (const button of chatButtons) {
@@ -325,7 +326,7 @@ async function getChatList() {
 
 async function loadOlderChats(loadAllChats = false) {
     let chatCount = 0;
-    let chatButtons = await page.$x("//li[@class='relative']/div/a");
+    let chatButtons = await page.$x(selectors.buttons.historyChatItem);
     if (chatButtons.length < 3) {
         return;
     }

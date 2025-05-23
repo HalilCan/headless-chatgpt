@@ -14,7 +14,7 @@
         "additionalModelsButtons": "//div[@role='menu' and @data-side='right']/div",
         "addPhotosAndFilesDropdown": "//button[@id='upload-file-btn']",
         "addPhotosAndFilesLocal": "//div[@role='menuitem']//span[normalize-space(.)='Add photos and files']",
-        "historyChatItem": "//div[@id='history']//li[@class='relative']/div/a",
+        "historyChatItem": "//div[@id='history']//a",
         "viewPlans": "//nav[@aria-label='Chat history']/div[contains(@class,'sticky') and contains(@class, 'bottom-0')]",
         "submit": "//button[@id='composer-submit-button']",
         "lastMessageModelChanger": "((//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]//div[contains(concat(' ', normalize-space(@class), ' '), ' end-0 ') and contains(concat(' ', normalize-space(@class), ' '), ' justify-start ') and not(contains(concat(' ', normalize-space(@class), ' '), ' items-center '))])[last()]/div/span)[last()]/button",
