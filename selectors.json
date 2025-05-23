@@ -26,7 +26,8 @@
         "promptTextArea": "//form[@data-type='unified-composer']//textarea[contains(concat(' ', normalize-space(@class), ' '), ' text-token-text-primary ')]"
     },
     "content": {
-        "responses": "//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]//div[contains(concat(' ', normalize-space(@class), ' '), ' prose ')]",
+        "responses": "//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]",
+        "messageBlocks": "//div[@data-message-author-role='assistant'][@data-message-id]",
         "bigChatContainer": "//main[@id='main']",
         "splashScreenText": "//h1//div[contains(concat(' ', normalize-space(@class), ' '), ' text-pretty ')]"
     }

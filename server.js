@@ -3,13 +3,23 @@ const axios = require('axios');
 const browserModule = require('./browser');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const he = require('he');   
+// logging:
+const _DEBUG = true;
+const path = require('path');
+const LOG_FILE = path.join(__dirname, 'debug_llm_api.txt');
 // temporary:
 const cors = require('cors');
+
+function logToFile(str) {
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(LOG_FILE, `[${timestamp}] ${str}\n`, 'utf8');
+}
 
 const app = express();
 // temporary: (uninstall cors after done)
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb' }));
 
 app.get('/chatgpt', async (req, res) => {
     try {
@@ -242,6 +252,199 @@ app.post('/newChat', async (req, res) => {
     }
 })
 
+/// OLLAMA STYLE ENDPOINTS ///
+
+// For Cline
+let systemMessageKeep = true;
+app.post('/api/chat', async (req, res) => {
+    try {
+        if (_DEBUG) {
+            logToFile("\n=== Incoming /api/chat request ===");
+            logToFile(JSON.stringify(req.body, null, 2));
+        }
+
+        const messages = req.body.messages;
+        const model = req.body.model;
+        const temperature = req.body.temperature;
+        const otherKeys = Object.keys(req.body).filter(k => !['messages', 'model', 'temperature'].includes(k));
+
+        if (_DEBUG) {
+            logToFile(`Model: ${model}`);
+            logToFile(`Temperature: ${temperature}`);
+            if (otherKeys.length) {
+                logToFile("Other keys in body: " + JSON.stringify(otherKeys));
+            }
+        }       
+
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            logToFile("Error: 'messages' missing or empty!");
+            res.status(400).json({ error: "Missing or empty 'messages' array in request." });
+            return;
+        }
+        if (!model) {
+            logToFile("Error: 'model' missing!");
+            res.status(400).json({ error: "Missing 'model' in request." });
+            return;
+        }
+
+        // keepLast can be supplied in the request body, defaults to 1
+        // TODO: Dirty handling system / assistant echo messages.
+        let keepLast;
+        if (systemMessageKeep) {
+            keepLast = Number(req.body.keep_last ?? 2);
+            systemMessageKeep = false;
+        } else {
+            keepLast = Number(req.body.keep_last ?? 1);
+        }
+        // keepLast = Number(req.body.keep_last ?? 2);
+
+
+        const prompt = buildPrompt(lastNMessages(messages, keepLast));
+        logToFile("\nPrompt to LLM: " + prompt);
+
+        let responseText = await browserModule.queryAi(prompt, "");
+        // responseText = responseText.replace(/\\n/g, '\n');
+        responseText = he.decode(responseText)          // un-escape &lt; &gt;
+            // .replace(/\\n/g, '\n');    // keep the newline fix
+        // responseText = responseText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        logToFile("\nLLM response: " + responseText);
+
+        const result = {
+            "message": {
+                "role": "assistant",
+                content: responseText
+            },
+            "done": true
+        };
+        logToFile("\n=== Outgoing /api/chat response ===");
+        logToFile(JSON.stringify(result, null, 2));
+
+        res.json(result);
+
+        logToFile("=== /api/chat served successfully ===\n");
+
+    } catch (error) {
+        logToFile("Error in /api/chat: " + error.toString());
+        res.status(500).json({ error: 'Error generating completion' });
+    }
+});
+
+/** Return up-to the last `n` messages (role/content objects). */
+function lastNMessages(messages, n = 2) {
+    if (!Array.isArray(messages)) return [];
+    return messages.slice(-n);
+}
+
+/** Build a readable prompt from an array of role/content pairs. */
+function buildPrompt(arr) {
+    return arr.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n');
+}
+function buildPromptRoo(arr) {
+    return arr.map(m => {
+        let contentText;
+        if (Array.isArray(m.content)) {
+            contentText = m.content.map(c => c.text).join(' ');
+        } else {
+            contentText = m.content;
+        }
+        return `${m.role.toUpperCase()}: ${contentText}`;
+    }).join('\n');
+}
+
+// For Roo:
+app.post('/v1/chat/completions', async (req, res) => {
+    try {
+        if (_DEBUG) {
+            logToFile("\n=== Incoming /api/chat request ===");
+            logToFile(JSON.stringify(req.body, null, 2));
+        }
+
+        const messages = req.body.messages;
+        const model = req.body.model;
+        const temperature = req.body.temperature;
+        const otherKeys = Object.keys(req.body).filter(k => !['messages', 'model', 'temperature'].includes(k));
+
+        if (_DEBUG) {
+            logToFile(`Model: ${model}`);
+            logToFile(`Temperature: ${temperature}`);
+            if (otherKeys.length) {
+                logToFile("Other keys in body: " + JSON.stringify(otherKeys));
+            }
+        }       
+
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            logToFile("Error: 'messages' missing or empty!");
+            res.status(400).json({ error: "Missing or empty 'messages' array in request." });
+            return;
+        }
+        if (!model) {
+            logToFile("Error: 'model' missing!");
+            res.status(400).json({ error: "Missing 'model' in request." });
+            return;
+        }
+
+        // keepLast can be supplied in the request body, defaults to 2
+        const keepLast = Number(req.body.keep_last ?? 2);
+        const prompt = buildPromptRoo(lastNMessages(messages, keepLast));
+        logToFile("\nPrompt to LLM: " + prompt);
+
+        let responseText = await browserModule.queryAi(prompt, "");
+        // responseText = responseText.replace(/\\n/g, '\n');
+        // responseText = he.decode(responseText)          // un-escape &lt; &gt;
+            // .replace(/\\n/g, '\n');    // keep the newline fix
+
+        logToFile("\nLLM response: " + responseText);
+
+        const result = {
+            "message": {
+                "role": "assistant",
+                content: responseText
+            },
+            "done": true
+        };
+        logToFile("\n=== Outgoing /api/chat response ===");
+        logToFile(JSON.stringify(result, null, 2));
+
+        res.json(result);
+
+        logToFile("=== /api/chat served successfully ===\n");
+
+    } catch (error) {
+        logToFile("Error in /api/chat: " + error.toString());
+        res.status(500).json({ error: 'Error generating completion' });
+    }
+});
+
+// app.post('/v1/chat/completions', async (req, res) => {
+//     } catch (error) {
+//         logToFile("Error in /v1/chat/completions: " + error.toString());
+//         res.status(500).json({ error: 'Error generating completion' });
+//     }
+// });
+
+//////////////////////////////
+
+/// UTILITY ///
+
+// const formatters = {
+//     // Formatter for <pre> tags
+//     preFormatter: function (elem, walk, builder, formatOptions) {
+//         builder.openBlock({ leadingLineBreaks: 1 });
+//         builder.addInline('```\n');
+//         walk(elem.children, builder);
+//         builder.addInline('\n```');
+//         builder.closeBlock({ trailingLineBreaks: 1 });
+//     },
+//     // Formatter for <li> tags
+//     liFormatter: function (elem, walk, builder, formatOptions) {
+//         builder.openBlock();
+//         builder.addInline('- ');
+//         walk(elem.children, builder);
+//         builder.closeBlock();
+//     }
+// };
+
+//////////////////////////////
 
 // determine the port.
 const defaultPort = 3000;

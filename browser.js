@@ -11,6 +11,8 @@ const _DEBUG = false;
 
 let browser;
 let page;
+let lastAssistantMessages = [];  // [{id: string, content: string}]
+
 
 const _currentGptModeButtonSelector = selectors.buttons.modelSwitcherDropdown;
 const _generationInitialWaitLength = 500;
@@ -19,6 +21,7 @@ const _generationStartTimeout = 5000;
 const _generationFinishTimeout = 200000;
 
 async function startBrowser() {
+    if (browser) return browser;
     browser = await puppeteer.launch({
         headless: false,
         userDataDir: "./headless-chatgpt-user-data",
@@ -180,9 +183,10 @@ async function clickButton(selector) {
 }
 
 // WARNING: Receiving by markdown currently uses the host's clipboard.
-async function readLastResponse(isMarkdown) {
+async function readLastResponse({ type }) {
+    console.log(`copying type: ${type}`);
     // const answerSelector = "div .markdown";
-    if (isMarkdown === true) {
+    if (type === "copy") {
         // to copy:
         // Ctrl + Shift + c
         await page.keyboard.down("Control");
@@ -214,12 +218,70 @@ async function readLastResponse(isMarkdown) {
             if (ta) ta.remove();
         });
 
+        console.log(`copiedContent: ${copiedContent}`);
+        // PROBLEM: ChatGPT automatically strips Cline/Roo's preferred xml/html style tags (or the <p> blocks with such tags in them - either way unworkable). So this is a no go for them. Do raw only.
         return copiedContent;
-    } else {
-        const answerSelector = selectors.content.responses;
-        let innerHTML = await getInnerHtmlOfLastElemXPath(answerSelector);
-        return innerHTML;
+    } else if (type === "raw") {
+        // const answerSelector = selectors.content.responses;
+        // let innerHTML = await getInnerHtmlOfLastElemXPath(answerSelector);
+        // return innerHTML;
+
+        // 1. Use XPath to get all *assistant message* nodes (with data-message-id)
+        const messageBlockXPath = selectors.content.messageBlocks; // Should be correct XPath!
+        const allMessages = await page.evaluate((messageBlockXPath) => {
+            function getNodesByXPath(xpath) {
+                let results = [];
+                let query = document.evaluate(
+                    xpath,
+                    document,
+                    null,
+                    XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+                    null
+                );
+                for (let i = 0; i < query.snapshotLength; i++) {
+                    results.push(query.snapshotItem(i));
+                }
+                return results;
+            }
+            
+            function adhocTextFixer(text) {
+                // Collapse <<<<<<< blocks around REPLACE/SEARCH
+                text = text.replace(
+                    /(?:\s*\n){7}(REPLACE|SEARCH)\s*\n(?:\s*\n){7}/g,
+                    (match, p1) => `<<<<<<< ${p1}`
+                );
+
+                return text;
+            }
+            
+            const nodes = getNodesByXPath(messageBlockXPath);
+            // Use .textContent to grab plain text, which preserves custom tags-as-text
+            return nodes.map(node => ({
+                id: node.getAttribute('data-message-id'),
+                content: adhocTextFixer(node.textContent)
+            }));
+        }, messageBlockXPath);
+
+        console.log("\n\nallMessages:", allMessages);
+
+        const seenIds = new Set(lastAssistantMessages.map(m => m.id));
+        let newMessages = allMessages.filter(m => !seenIds.has(m.id));
+        console.log("\n\nnewMessages:", newMessages);
+
+        lastAssistantMessages = allMessages;
+
+        if (newMessages.length) {
+            return newMessages.map(m => m.content).join('\n');
+        } else if (allMessages.length) {
+            return allMessages[allMessages.length - 1].content;
+        } else {
+            return "";
+        }
     }
+}
+
+function resetLastAssistantMessages() {
+    lastAssistantMessages = [];
 }
 
 async function removePlanButton() {
@@ -725,7 +787,7 @@ async function retry(isWebSearch) {
         return "Error: Retry generation did not complete successfully";
     }
 
-    let innerHTML = await readLastResponse(false);
+    let innerHTML = await readLastResponse({ type: "raw" });
 
     if (_DEBUG) {
         console.log(innerHTML);
@@ -780,10 +842,7 @@ async function queryAi(message, context) {
     const inputSelector = selectors.fields.promptTextAreaDiv;
 
     await writeInTextArea(inputSelector, queryString);
-    // include the \n in the string because this doesn't work for some reason.
-    // okay, that didn't work too - but using type for \n twice did.
-    await writeInTextArea(inputSelector, "\n", { isTyping: true, delay: 0 });
-    await writeInTextArea(inputSelector, "\n", { isTyping: true, delay: 0 });
+    await page.keyboard.press('Enter');
     // the above manual / type switch-up is due to how they set ProseMirror up. Sunk it.
     // [TODO switch with clicking the button?]
 
@@ -792,13 +851,14 @@ async function queryAi(message, context) {
         return "Error: Generation did not complete successfully";
     }
 
-    innerHTML = await readLastResponse(false);
+    innerHTML = await readLastResponse({ type: "raw" });
 
     if (_DEBUG) {
         console.log(innerHTML);
     }
     return innerHTML;
 }
+
 
 module.exports = {
     startBrowser,
@@ -817,4 +877,5 @@ module.exports = {
     getChatList,
     goToChat,
     cancelGeneration,
+    resetLastAssistantMessages
 };

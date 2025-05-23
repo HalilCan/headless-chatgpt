@@ -3,6 +3,7 @@ Ordered
 - [+] Update and simplify selectors
 - [+] Separate selectors (for increased modularity and easier updates)
 - [+] Full rework (fix, simplify, refactor) and path testing.
+- [~+] Agent and IDE integration: Roo failed; Cline did not.
 - [] Remove superfluous paths and code.
 - [] Add streaming
 - [] Captcha handling
