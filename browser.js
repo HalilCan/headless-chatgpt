@@ -7,7 +7,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
 
-const _DEBUG = false;
+const _DEBUG = true;
 
 let browser;
 let page;
