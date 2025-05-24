@@ -7,7 +7,6 @@
         "newChat": "//div[@id='sidebar']//a[@title='ChatGPT']",
         "modelSwitcherDropdown": "//div[@id='page-header']//button[@data-testid='model-switcher-dropdown-button']",
         "modelSwitcherFirstMenu": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']",
-        "modelSwitcherButtons": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']/div",
         "modelSwitcherModels": "//div[@role='menu']//div[@role='menuitem' and not(@aria-expanded)]",
         "additionalModelSwitcherDropdown": "//div[@data-testid='more-models-submenu']",
         "additionalModelSwitcherDropdownDumbAlt": "//div[@role='menu'][name(*[1])='label' and normalize-space(*[1])='Models']/div[last()]",
@@ -19,7 +18,8 @@
         "submit": "//button[@id='composer-submit-button']",
         "lastMessageModelChanger": "((//div[contains(concat(' ', normalize-space(@class), ' '), ' group/conversation-turn ')]//div[contains(concat(' ', normalize-space(@class), ' '), ' end-0 ') and contains(concat(' ', normalize-space(@class), ' '), ' justify-start ') and not(contains(concat(' ', normalize-space(@class), ' '), ' items-center '))])[last()]/div/span)[last()]/button",
         "stopStreaming": "//button[@aria-label='Stop streaming']",
-        "chatGPTSidebarButton": "//div[@id='sidebar']/div//a[@title='ChatGPT']"
+        "sidebarCreateNewChat": "//a[@data-testid='create-new-chat-button']",
+        "errorRegenerateButton":"//button[@data-testid='regenerate-thread-error-button']"
     },
     "fields": {
         "promptTextAreaDiv": "//div[@id='prompt-textarea']",

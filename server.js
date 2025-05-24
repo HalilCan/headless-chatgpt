@@ -177,6 +177,13 @@ app.post('/queryAi', async (req, res) => {
             res.send('Please provide valid text.');
             return;
         }
+        if (req.body.newChat === true) {
+            const actionResponse = await startNewChat(req.body.modelName);
+            if (actionResponse === -1) {
+                console.error('Error in starting new chat.');
+                res.status(500).send('Error in starting new chat.');
+            }
+        }
         let context = req.body.context ?? "";
         let extractMethod = req.body.extractMethod ?? "copy";
         let innerHtml = await browserModule.queryAi(req.body.text, context, extractMethod);
@@ -231,6 +238,11 @@ app.post('/selectChat', async (req, res) => {
     }
 })
 
+async function startNewChat (modelName="GPT-4o") {
+    const actionResponse = await browserModule.newChat(modelName);
+    return actionResponse;
+}
+
 app.post('/newChat', async (req, res) => {
     try {
         let modelName;
@@ -239,7 +251,7 @@ app.post('/newChat', async (req, res) => {
         } else {
             modelName = req.body.modelName;
         }
-        const actionResponse = await browserModule.newChat(modelName);
+        const actionResponse = await startNewChat(modelName);
         if (actionResponse === -1) {
             console.error('Error in starting new chat.');
             res.status(500).send('Error in starting new chat.');

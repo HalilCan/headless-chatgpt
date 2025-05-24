@@ -7,7 +7,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
 puppeteer.use(StealthPlugin());
 
-const _DEBUG = true;
+const _DEBUG = false;
 
 let browser;
 let page;
@@ -529,10 +529,10 @@ async function newChat(modelName) {
     if (_DEBUG) {
         console.log("[1] Waiting for sidebar button...");
     }
-    await page.waitForXPath(selectors.buttons.chatGPTSidebarButton, {
+    await page.waitForXPath(selectors.buttons.sidebarCreateNewChat, {
         visible: true,
     });
-    const [toolbarBtn] = await page.$x(selectors.buttons.chatGPTSidebarButton);
+    const [toolbarBtn] = await page.$x(selectors.buttons.sidebarCreateNewChat);
     if (!toolbarBtn) throw new Error("ChatGPT toolbar button not found");
     if (_DEBUG) {
         console.log("[2] Clicking ChatGPT sidebar button...");
@@ -620,7 +620,7 @@ async function newChat(modelName) {
         if (isBasic) {
             // --- 6/7. Get the button for the model and click ---
             const basicButtonXPath =
-                `${selectors.buttons.modelSwitcherButtons}` +
+                `${selectors.buttons.modelSwitcherModels}` +
                 `[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '${modelNameLower}')]`;
             if (_DEBUG) {
                 console.log(
